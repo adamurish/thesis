@@ -15,7 +15,7 @@ def plot_sample(num, images, labels):
         plt.xticks([])
         plt.yticks([])
         plt.grid(False)
-        plt.imshow(images[i], cmap=plt.cm.binary)
+        plt.imshow(images[i])
         plt.xlabel(labels[i])
     plt.show()
 
@@ -24,6 +24,7 @@ dataset = keras.datasets.mnist
 (train_images, train_labels), (test_images, test_labels) = dataset.load_data()
 
 train_images = train_images / 255.0
+train_images.mean()
 test_images = test_images / 255.0
 
 plot_sample(25, test_images, test_labels)
@@ -40,6 +41,6 @@ model.fit(train_images, train_labels, epochs=5)
 loss, accuracy = model.evaluate(test_images, test_labels)
 print(accuracy)
 
-print(np.argmax(model.predict(np.array([test_images[0]]))))
+print(np.argmax(model.predict(test_images)[0]))
 plt.imshow(test_images[0])
 plt.show()

@@ -33,3 +33,7 @@ import numpy as np;
 # cv2.destroyAllWindows()
 try_a = [1,2,3,4]
 print(try_a[-1])
+
+mean = np.zeros((4, 4)).mean(axis=0)
+print(mean)
+
