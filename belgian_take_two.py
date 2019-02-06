@@ -63,6 +63,30 @@ def plot_sample(labels, imgs, num=25):
     plt.show()
 
 
+def plot_random_sample(imgs, num=25):
+    """
+    Plots a random sample of images
+
+    :param imgs: numpy array of images
+    :param num: amount to plot, default 25
+    """
+    s_indexes = random.sample(range(len(imgs)), num)
+    s_images = np.array([imgs[i] for i in s_indexes])
+    plt.figure(figsize=(10, 10))
+    if num/5 > round(num/5):
+        col = int(num/5) + 1
+    else:
+        col = round(num/5)
+    for i in range(num):
+        plt.subplot(5, col, i+1)
+        plt.xticks([])
+        plt.yticks([])
+        plt.grid(False)
+        img = cv2.merge((s_images[i][:, :, 2], s_images[i][:, :, 1], s_images[i][:, :, 0]))
+        plt.imshow(img)
+    plt.show()
+
+
 def random_test(t_model: keras.Sequential, t_images, t_labels, k=10, ex_images=None):
     """
     Uses a keras Sequential model to perform tests on random
@@ -103,6 +127,7 @@ def random_test(t_model: keras.Sequential, t_images, t_labels, k=10, ex_images=N
 
 
 images, labels = load_images('F:/BelgianSigns/Training')
+plot_random_sample(images)
 
 # plot_sample(labels, images)
 # print(images.shape)

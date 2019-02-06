@@ -1,4 +1,6 @@
 import os
+import random
+
 import numpy as np
 import cv2
 import tensorflow as tf
@@ -101,9 +103,34 @@ def plot_sample(labels, imgs, bounding_boxes, num=25, rows=5, cols=5):
     plt.show()
 
 
+def plot_random_sample(imgs, num=25):
+    """
+    Plots an array of images with their respective labels
+
+    :param imgs: numpy array of images
+    :param num: amount to plot, default 25
+    """
+    s_indexes = random.sample(range(len(imgs)), num)
+    s_images = np.array([imgs[i] for i in s_indexes])
+    plt.figure(figsize=(10, 10))
+    if num/5 > round(num/5):
+        col = int(num/5) + 1
+    else:
+        col = round(num/5)
+    for i in range(num):
+        plt.subplot(5, col, i+1)
+        plt.xticks([])
+        plt.yticks([])
+        plt.grid(False)
+        img = cv2.merge((s_images[i][:, :, 2], s_images[i][:, :, 1], s_images[i][:, :, 0]))
+        plt.imshow(img)
+    plt.show()
+
+
 imgs, labels, bounding_boxes = load_imgs('F:/signDatabasePublicFramesOnly/vid0', label_filter='stop',
                                          resize=True, resize_scale=.75, img_size=(480, 704))
 print(imgs.shape)
 print(labels.shape)
 print(bounding_boxes.shape)
-plot_sample(labels, imgs, bounding_boxes, num=4, rows=2, cols=2)
+# plot_sample(labels, imgs, bounding_boxes, num=25, rows=5, cols=5
+plot_random_sample(imgs)
