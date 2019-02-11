@@ -96,8 +96,8 @@ def plot_sample(labels, imgs, bounding_boxes, num=25, rows=5, cols=5):
         plt.yticks([])
         plt.grid(False)
         img = cv2.merge((imgs[i][:, :, 2], imgs[i][:, :, 1], imgs[i][:, :, 0]))
-        cv2.rectangle(img, (bounding_boxes[i][0][0], bounding_boxes[i][0][1]),
-                      (bounding_boxes[i][1][0], bounding_boxes[i][1][1]), (1, 0, 0), 2)
+        cv2.rectangle(img, (bounding_boxes[i][0], bounding_boxes[i][1]),
+                      (bounding_boxes[i][2], bounding_boxes[i][3]), (1, 0, 0), 2)
         plt.imshow(img)
         plt.xlabel(labels[i])
     plt.show()
@@ -127,10 +127,48 @@ def plot_random_sample(imgs, num=25):
     plt.show()
 
 
-imgs, labels, bounding_boxes = load_imgs('F:/signDatabasePublicFramesOnly/vid0', label_filter='stop',
-                                         resize=True, resize_scale=.75, img_size=(480, 704))
+imgs, labels, bounding_boxes =    load_imgs('F:/signDatabasePublicFramesOnly/vid0', label_filter='stop', resize=True, resize_scale=.25, img_size=(480, 704))
+imgs2, labels2, bounding_boxes2 = load_imgs('F:/signDatabasePublicFramesOnly/vid1', label_filter='stop', resize=True, resize_scale=.25, img_size=(480, 704))
+imgs3, labels3, bounding_boxes3 = load_imgs('F:/signDatabasePublicFramesOnly/vid2', label_filter='stop', resize=True, resize_scale=.25, img_size=(480, 704))
+imgs4, labels4, bounding_boxes4 = load_imgs('F:/signDatabasePublicFramesOnly/vid3', label_filter='stop', resize=True, resize_scale=.25, img_size=(480, 704))
+imgs5, labels5, bounding_boxes5 = load_imgs('F:/signDatabasePublicFramesOnly/vid4', label_filter='stop', resize=True, resize_scale=.25, img_size=(480, 704))
+imgs6, labels6, bounding_boxes6 = load_imgs('F:/signDatabasePublicFramesOnly/vid5', label_filter='stop', resize=True, resize_scale=.25, img_size=(480, 704))
+imgs = np.concatenate((imgs, imgs2, imgs3, imgs4, imgs5, imgs6), 0)
+labels = np.concatenate((labels, labels2, labels3, labels4, labels5, labels6), 0)
+bounding_boxes = np.concatenate((bounding_boxes, bounding_boxes2, bounding_boxes3, bounding_boxes4, bounding_boxes5, bounding_boxes6), 0)
+bounding_boxes.resize((bounding_boxes.shape[0], 4))
+test_imgs = imgs[-50:]
+imgs = imgs[:-50]
+test_labels = labels[-50:]
+labels = labels[:-50]
+test_bounding_boxes = bounding_boxes[-50:]
+bounding_boxes = bounding_boxes[:-50]
 print(imgs.shape)
 print(labels.shape)
-print(bounding_boxes.shape)
-# plot_sample(labels, imgs, bounding_boxes, num=25, rows=5, cols=5
-plot_random_sample(imgs)
+print(bounding_boxes[0])
+
+# plot_sample(labels, imgs, bounding_boxes, num=25, rows=5, cols=5)
+# plot_random_sample(imgs)
+
+model = keras.models.Sequential()
+model.add(keras.layers.Conv2D(12, (5, 5), input_shape=imgs[0].shape))
+model.add(keras.layers.Activation(tf.nn.relu))
+model.add(keras.layers.Conv2D(24, (4, 4)))
+model.add(keras.layers.Activation(tf.nn.relu))
+model.add(keras.layers.Conv2D(48, (3, 3)))
+model.add(keras.layers.Activation(tf.nn.relu))
+model.add(keras.layers.Conv2D(24, (3, 3)))
+model.add(keras.layers.Activation(tf.nn.relu))
+model.add(keras.layers.Conv2D(24, (3, 3)))
+model.add(keras.layers.Activation(tf.nn.relu))
+model.add(keras.layers.Flatten())
+model.add(keras.layers.Dense(128))
+model.add(keras.layers.Activation(tf.nn.relu))
+model.add(keras.layers.Dense(64))
+model.add(keras.layers.Activation(tf.nn.relu))
+model.add(keras.layers.Dense(4))
+
+model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+model.fit(imgs, bounding_boxes, epochs=5)
+
+plot_sample(test_labels, test_imgs, model.predict(test_imgs))
