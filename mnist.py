@@ -82,8 +82,14 @@ model.add(keras.layers.Dropout(0.25))
 model.add(keras.layers.Dense(10))
 model.add(keras.layers.Activation(tf.nn.softmax))
 
+
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-model.fit(train_images, train_labels, epochs=5)
+
+cp_path = 'G:/Weights/mnist.ckpt'
+cp_callback = tf.keras.callbacks.ModelCheckpoint(cp_path, save_weights_only=True, verbose=1)
+model.fit(train_images, train_labels, epochs=5, callbacks=[cp_callback])
+
+# model.load_weights(cp_path)
 
 loss, accuracy = model.evaluate(test_images, test_labels)
 print(accuracy)
